@@ -17,13 +17,16 @@ public class MyThread extends Thread {
     }
 
     private void print() {
-        if (flag.compareAndSet(0, 1)) {
-            System.out.println("Hello! I'm thread number " + name);
-            for (int i = 0; i < 10; i++) {
-                System.out.print(i);
+        while (true) {
+            if (flag.compareAndSet(0, 1)) {
+                System.out.println("Hello! I'm thread number " + name);
+                for (int i = 0; i < 10; i++) {
+                    System.out.print(i);
+                }
+                System.out.println();
+                flag.compareAndSet(1, 0);
+                return;
             }
-            System.out.println();
-            flag.compareAndSet(1, 0);
         }
     }
 }
