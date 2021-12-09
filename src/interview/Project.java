@@ -8,9 +8,13 @@ public class Project {
     //список пакетов проекта
     private final List<Package> packages = new ArrayList<>();
 
-    private List<Package> order;
+    private List<Package> packagesOrderForCompilation;
 
-    private Map<Package, String> color;
+    private Map<Package, String> packageColourMap;
+
+    private static final String WHITE = "WHITE";
+    private static final String GREY = "GREY";
+    private static final String BLACK = "BLACK";
 
     public Project(String name) {
         this.name = name;
@@ -32,16 +36,16 @@ public class Project {
      * В данном примере там находится только один пакет A.
      */
     public Boolean hasCyclicDependencies() {
-        color = new HashMap<>();
+        packageColourMap = new HashMap<>();
         for (Package pack : packages) {
-            color.put(pack, "white");
+            packageColourMap.put(pack, WHITE);
             makeMapWhite(pack);
         }
 
-        order = new ArrayList<>();
-        boolean hasCycle = false;//!!!!
+        packagesOrderForCompilation = new LinkedList<>();
+        boolean hasCycle = false;
         for (Package pack : packages) {
-            order.add(pack);
+            packagesOrderForCompilation.add(pack);
             hasCycle = dfs(pack);
         }
         return hasCycle;
@@ -57,38 +61,41 @@ public class Project {
         if (hasCyclicDependencies()) {
             throw new RuntimeException("Impossible to compile due to Cyclic dependency");
         }
-        List<Package> reverseOrder = new ArrayList<>();
-        for (int i = order.size() - 1; i >= 0; i--) {
-            reverseOrder.add(order.get(i));
+
+        List<Package> reverseOrder = new LinkedList<>();
+        for (int i = packagesOrderForCompilation.size() - 1; i >= 0; i--) {
+            reverseOrder.add(packagesOrderForCompilation.get(i));
         }
         return reverseOrder;
     }
 
     //обход цикла в глубину
     private Boolean dfs(Package p) {
-        color.replace(p, "grey");
+        packageColourMap.replace(p, GREY);
         for (Package dep : p.getDependencies()) {
-            order.remove(dep);///!!!!
-            order.add(dep);
-            if (color.get(dep).equals("grey")) {
+            //удаляем зависимость из списка, как как встретили ее снова и она должна быть скомпилирована раньше
+            packagesOrderForCompilation.remove(dep);
+            packagesOrderForCompilation.add(dep);
+
+            //если встретили серую вершину, значит, мы ее не закончили обрабатывать, значит, есть цикл
+            if (GREY.equals(packageColourMap.get(dep))) {
                 return true;
             }
-            if (color.get(dep).equals("white")) {
+            if (WHITE.equals(packageColourMap.get(dep))) {
                 return dfs(dep);
             }
         }
-        color.replace(p, "black");//!!!
+        packageColourMap.replace(p, BLACK);
         return false;
     }
 
     //помечаем все вершины графа белыми
     private void makeMapWhite(Package p) {
         for (Package dep : p.getDependencies()) {
-            if (!color.containsKey(dep)) {
-                color.put(dep, "white");
+            if (!packageColourMap.containsKey(dep)) {
+                packageColourMap.put(dep, WHITE);
                 makeMapWhite(dep);
             }
         }
     }
-
 }
