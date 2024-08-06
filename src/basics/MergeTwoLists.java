@@ -8,17 +8,17 @@ public class MergeTwoLists {
         ListNode currNode;
         ListNode prevNode = new ListNode();
         ListNode startNode = prevNode;
-        while (list1 != null && list2 != null ) {
-                currNode = new ListNode();
-                if (list1.val < list2.val) {
-                    currNode.val = list1.val;
-                    list1 = list1.next;
-                } else {
-                    currNode.val = list2.val;
-                    list2 = list2.next;
-                }
-                prevNode.next = currNode;
-                prevNode = prevNode.next;
+        while (list1 != null && list2 != null) {
+            currNode = new ListNode();
+            if (list1.val < list2.val) {
+                currNode.val = list1.val;
+                list1 = list1.next;
+            } else {
+                currNode.val = list2.val;
+                list2 = list2.next;
+            }
+            prevNode.next = currNode;
+            prevNode = prevNode.next;
 
         }
         if (list1 == null && list2 != null) {
@@ -50,7 +50,7 @@ public class MergeTwoLists {
         printList(list1);
 
         ListNode list2 = new ListNode(8);
-        for (int i = 7; i > 1; i-=2) {
+        for (int i = 7; i > 1; i -= 2) {
             list2 = new ListNode(i, list2);
         }
         printList(list2);
