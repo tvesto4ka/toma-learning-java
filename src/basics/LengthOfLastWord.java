@@ -5,7 +5,7 @@ public class LengthOfLastWord {
         String[] tokens = s.split(" ");
         String lastWord = "";
         for (int i = tokens.length - 1; i >= 0; i--) {
-            if (tokens[i].length() > 0) {
+            if (!tokens[i].isEmpty()) {
                 lastWord = tokens[i];
                 break;
             }
